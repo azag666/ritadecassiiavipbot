@@ -5,6 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carregando...</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a1a1a; /* Fundo escuro */
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .loader-container {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #ffffff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        p {
+            font-size: 1.2em;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 0.5s;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
     <script>
         !function(f,b,e,v,n,t,s)
         {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -14,20 +52,19 @@
         t.src=v;s=b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '12345');
+        fbq('init', '1111');
         fbq('track', 'PageView');
     </script>
     <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=12345&ev=PageView&noscript=1"
+    src="https://www.facebook.com/tr?id=1111&ev=PageView&noscript=1"
     /></noscript>
     <script>
         (async function() {
             const CONFIG = {
-                SELLER_API_KEY: "7f7dd615-fa45-4a51-9feb-71f65aeacc37",
-                PRESSEL_ID: 4,
-                WHITE_PAGE_URL: "https://br.pinterest.com/",
+                                PRESSEL_ID: 12,
+                WHITE_PAGE_URL: "https://br.pinterest.com/pin/22095854406665522/",
                 BOT_USERNAME: "gabrielaluccabot",
-                API_BASE_URL: ""
+                API_BASE_URL: "https://hottrack-production.up.railway.app"
             };
             function getQueryParam(param) {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -44,13 +81,21 @@
                 return { fbp, fbc };
             }
             try {
+                // Bloqueia bots conhecidos do Facebook para evitar poluir as métricas
+                const userAgent = navigator.userAgent;
+                if (/facebookexternalhit|Facebot/i.test(userAgent)) {
+                    console.log('Bot do Facebook detectado. Redirecionando...');
+                    window.location.href = CONFIG.WHITE_PAGE_URL;
+                    return; // Interrompe a execução
+                }
+
+                
                 const { fbp, fbc } = getFacebookCookies();
                 const response = await fetch(CONFIG.API_BASE_URL + '/api/registerClick', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        sellerApiKey: CONFIG.SELLER_API_KEY,
-                        presselId: CONFIG.PRESSEL_ID,
+                                                presselId: CONFIG.PRESSEL_ID,
                         referer: document.referrer || null,
                         fbclid: getQueryParam('fbclid'),
                         fbp: fbp,
@@ -79,6 +124,9 @@
     </script>
 </head>
 <body>
-    <p>Carregando...</p>
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <p>Aguarde, estamos redirecionando...</p>
+    </div>
 </body>
 </html>
